@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mini Instagram Clone</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fafafa;
+        padding: 20px;
+      }
+
+      .app {
+        max-width: 500px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #262626;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+      }
+
+      button {
+        background-color: #3897f0;
+        color: white;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .post {
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+        padding-top: 20px;
+      }
+
+      .post img {
+        width: 100%;
+        border-radius: 10px;
+      }
+
+      .caption {
+        margin-top: 8px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React CDN -->
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- React Code -->
+    <script type="text/babel">
+      const { useState } = React;
+
+      function App() {
+        const [image, setImage] = useState(null);
+        const [caption, setCaption] = useState("");
+        const [posts, setPosts] = useState([]);
+
+        const handlePost = () => {
+          if (!image || caption.trim() === "") return;
+
+          const newPost = {
+            id: Date.now(),
+            image,
+            caption,
+          };
+          setPosts([newPost, ...posts]);
+          setImage(null);
+          setCaption("");
+          document.getElementById("fileInput").value = null;
+        };
+
+        const handleImageChange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+
+        return (
+          <div className="app">
+            <h1>Insta Clone 📸</h1>
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            <textarea
+              rows="2"
+              placeholder="Write a caption..."
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+            ></textarea>
+            <button onClick={handlePost}>Post</button>
+
+            {posts.map((post) => (
+              <div className="post" key={post.id}>
+                <img src={post.image} alt="Post" />
+                <p className="caption">{post.caption}</p>
+              </div>
+            ))}
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
